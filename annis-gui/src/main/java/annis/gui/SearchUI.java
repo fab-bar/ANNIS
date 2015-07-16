@@ -669,6 +669,11 @@ public class SearchUI extends CommonUI
   {
     return mainTab;
   }
+  
+  public MainToolbar getMainToolbar()
+  {
+    return toolbar;
+  }
 
   @Override
   public void notifyCannotPlayMimeType(String mimeType)
