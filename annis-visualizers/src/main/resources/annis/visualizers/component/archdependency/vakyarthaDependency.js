@@ -203,18 +203,15 @@ Raphael.fn.pointer=function(c,b,d,h){
 /**
  * Calls the visualization, written by Kim Gerdes. Do not ask me, what is
  * happening here
+ * @param element
  */
-function drawDependenceTree()
+function drawDependenceTree(element)
 {
-  paper=Raphael("holder",window.innerWidth-100,100);
+  paper=Raphael(element, window.innerWidth-100,100);
   svgpos=$("svg").offset();
   makewords();
-  $("#holder").attr("style","background:white; position:relative;margin:0px; padding:0px");
+  $(element).attr("style","background:white; position:relative;margin:0px; padding:0px");
   $("svg")[0].setAttribute("width",svgwi);
   $("svg")[0].setAttribute("height",dependencyspace+shownfeatures.length*line);
   drawalldeps();
 }
-
-$(function(){
-  drawDependenceTree();
-});

@@ -84,7 +84,7 @@ public class VakyarthaDependencyTree extends WriterVisualizer
   @Override
   public String getShortName()
   {
-    return "arch_dependency";
+    return "arch_dependency_iframe";
   }
 
   @Override

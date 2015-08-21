@@ -19,18 +19,20 @@ import annis.libgui.VisualizationToggle;
 import annis.libgui.visualizers.AbstractVisualizer;
 import annis.libgui.visualizers.VisualizerInput;
 import com.vaadin.ui.Component;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
  *
  * @author Thomas Krause <krauseto@hu-berlin.de>
  */
+@PluginImplementation
 public class ArchDependencyVisualizer extends AbstractVisualizer<Component>
 {
 
   @Override
   public String getShortName()
   {
-    return "arch_dependency2";
+    return "arch_dependency";
   }
 
   @Override

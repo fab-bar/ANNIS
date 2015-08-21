@@ -5,6 +5,6 @@ window.annis_visualizers_component_archdependency_VakyarthaDependencyTree = func
   
   this.onStateChange = function()
   {
-
+    drawDependenceTree(rootDiv);
   };
 };
