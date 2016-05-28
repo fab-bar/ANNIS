@@ -314,7 +314,7 @@ public class SaltAnnotateExtractor implements AnnotateExtractor<SaltProject>
           if (tok != null)
           {
             boolean missing = true;
-            List<SRelation<SNode, SNode>> existingRelations = graph.getRelations(span.getId(),
+            List<SRelation<?, ?>> existingRelations = graph.getRelations(span.getId(),
               tok.getId());
             if (existingRelations != null)
             {
@@ -600,7 +600,7 @@ public class SaltAnnotateExtractor implements AnnotateExtractor<SaltProject>
       layer.setName(namespace);
       graph.addLayer(layer);
     }
-    node.addLayer(layer);
+    layer.addNode(node);
   }
 
   private void addLongSFeature(SNode node, String name,
@@ -690,13 +690,13 @@ public class SaltAnnotateExtractor implements AnnotateExtractor<SaltProject>
     Set<SMetaAnnotation> metaAnnotations = new LinkedHashSet<>(oldNode.getMetaAnnotations());
     Set<SLayer> nodeLayers = new LinkedHashSet<>(oldNode.getLayers());
     Multimap<SRelation, SLayer> layerOfRelation = ArrayListMultimap.create();
-    List<SRelation<SNode,SNode>> inRelations = new LinkedList<>(graph.getInRelations(oldNode.
+    List<SRelation<?,?>> inRelations = new LinkedList<>(graph.getInRelations(oldNode.
       getId()));
-    List<SRelation<SNode,SNode>> outRelations = new LinkedList<>(graph.getOutRelations(oldNode.
+    List<SRelation<?,?>> outRelations = new LinkedList<>(graph.getOutRelations(oldNode.
       getId()));
     
     // step 2: remove the old node from everything it is connected to
-    for (SRelation<SNode,SNode> rel : inRelations)
+    for (SRelation<?,?> rel : inRelations)
     {
       if (rel.getLayers() != null)
       {
@@ -705,7 +705,7 @@ public class SaltAnnotateExtractor implements AnnotateExtractor<SaltProject>
       graph.removeRelation(rel);
     }
         
-    for (SRelation<SNode,SNode> rel : outRelations)
+    for (SRelation<?,?> rel : outRelations)
     {
       if (rel.getLayers() != null)
       {
@@ -780,7 +780,7 @@ public class SaltAnnotateExtractor implements AnnotateExtractor<SaltProject>
   {
     SRelation rel = null;
 
-    List<SRelation<SNode,SNode>> existingRelations = graph.getRelations(sourceNode.getId(),
+    List<SRelation<?,?>> existingRelations = graph.getRelations(sourceNode.getId(),
       targetNode.getId());
     if (existingRelations != null)
     {
@@ -942,7 +942,7 @@ public class SaltAnnotateExtractor implements AnnotateExtractor<SaltProject>
     SRelation rel, SLayer layer,
     long componentID, long pre)
   {
-    List<SRelation<SNode,SNode>> mirrorRelations = graph.getRelations(source.getId(),
+    List<SRelation<?,?>> mirrorRelations = graph.getRelations(source.getId(),
       target.getId());
     if (mirrorRelations != null && mirrorRelations.size() > 0)
     {

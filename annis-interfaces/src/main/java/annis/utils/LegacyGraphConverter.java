@@ -184,7 +184,7 @@ public class LegacyGraphConverter
         
         if (sNode instanceof SToken)
         {
-          List<DataSourceSequence> seqList =
+          List<? extends DataSourceSequence<?>> seqList =
             docGraph.getOverlappedDataSourceSequence(sNode,
             SALT_TYPE.STEXT_OVERLAPPING_RELATION);
           if (seqList != null)

@@ -235,7 +235,7 @@ public class VakyarthaDependencyTree extends WriterVisualizer
         vakyarthaObject.put("tooltip", completeAnnotation);
 
         JSONObject govs = new JSONObject();
-        List<SRelation<SNode,SNode>> sEdges = node.getGraph().getInRelations(node.getId());
+        List<SRelation<?,?>> sEdges = node.getGraph().getInRelations(node.getId());
 
         for (SRelation<? extends SNode,? extends SNode> e : sEdges)
         {
@@ -389,7 +389,7 @@ public class VakyarthaDependencyTree extends WriterVisualizer
   {
     SDocumentGraph sDocumentGraph = input.getSResult().getDocumentGraph();
 
-    List<DataSourceSequence> sequences = sDocumentGraph.
+    List<? extends DataSourceSequence<?>> sequences = sDocumentGraph.
       getOverlappedDataSourceSequence(node, SALT_TYPE.STEXT_OVERLAPPING_RELATION);
 
     if (sequences != null && sequences.size() > 0)

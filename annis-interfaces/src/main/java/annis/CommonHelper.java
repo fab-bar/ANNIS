@@ -158,7 +158,7 @@ public class CommonHelper
         while (current != null)
         {
           token.add(current);
-          List<SRelation<SNode,SNode>> out = graph.getOutRelations(current.getId());
+          List<SRelation<?,?>> out = graph.getOutRelations(current.getId());
           current = null;
           if (out != null)
           {
@@ -235,7 +235,7 @@ public class CommonHelper
   {
     SGraph graph = tok.getGraph();
 
-    List<SRelation<SNode,SNode>> edges = graph.getOutRelations(tok.getId());
+    List<SRelation<?,?>> edges = graph.getOutRelations(tok.getId());
     for (SRelation<? extends SNode,? extends SNode> e : edges)
     {
       if (e instanceof STextualRelation)
@@ -361,7 +361,7 @@ public class CommonHelper
   {
     if (node != null)
     {
-      List<DataSourceSequence> dataSources = graph.getOverlappedDataSourceSequence(
+      List<? extends DataSourceSequence<?>> dataSources = graph.getOverlappedDataSourceSequence(
         node,
         SALT_TYPE.STEXT_OVERLAPPING_RELATION);
       if (dataSources != null)

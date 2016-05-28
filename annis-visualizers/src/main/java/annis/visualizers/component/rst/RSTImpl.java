@@ -162,7 +162,7 @@ public class RSTImpl extends Panel implements GraphTraverseHandler {
   private TreeSet<SStructure> sentences = new TreeSet<SStructure>(
           new Comparator<SStructure>() {
     private int getStartPosition(SStructure s) {
-      List<SRelation<SNode,SNode>> out = s.getGraph().getOutRelations(s.getId());
+      List<SRelation<?,?>> out = s.getGraph().getOutRelations(s.getId());
 
       for (SRelation e : out) {
         if (e instanceof SRelation
@@ -309,14 +309,14 @@ public class RSTImpl extends Panel implements GraphTraverseHandler {
     StringBuilder sb = new StringBuilder();
     // use a hash set so we don't get any duplicate entries
     LinkedHashSet<SToken> token = new LinkedHashSet<>();
-    List<SRelation<SNode, SNode>> edges;
+    List<SRelation<?, ?>> edges;
 
     if (currNode instanceof SStructure) {
 
       edges = currNode.getGraph().getOutRelations(currNode.getId());
 
       // get all tokens directly dominated tokens and build a string
-      for (SRelation<SNode, SNode> sedge : edges) {
+      for (SRelation<?, ?> sedge : edges) {
         if (sedge.getTarget() instanceof SToken) 
         {
           token.add((SToken) sedge.getTarget());
@@ -393,11 +393,11 @@ public class RSTImpl extends Panel implements GraphTraverseHandler {
       // is set to true, when currNode is reached by an rst edge
       boolean isAppendedToParent = false;
 
-      List<SRelation<SNode, SNode>> in = currSnode.getGraph().getInRelations(currSnode.getId());
+      List<SRelation<?, ?>> in = currSnode.getGraph().getInRelations(currSnode.getId());
 
       if (in != null) {
 
-        for (SRelation<SNode, SNode> e : in) {
+        for (SRelation<?, ?> e : in) {
           if (hasRSTType(e)) {
             JSONObject tmp;
 
@@ -492,7 +492,7 @@ public class RSTImpl extends Panel implements GraphTraverseHandler {
    */
   private String getText(SToken currNode) {
 
-    List<DataSourceSequence> sSequences = ((SDocumentGraph) currNode.getGraph()).
+    List<? extends DataSourceSequence<?>> sSequences = ((SDocumentGraph) currNode.getGraph()).
             getOverlappedDataSourceSequence(currNode, SALT_TYPE.STEXT_OVERLAPPING_RELATION);
 
     // only support one text for spanns
@@ -529,7 +529,7 @@ public class RSTImpl extends Panel implements GraphTraverseHandler {
 
   private JSONArray getOutGoingEdgeTypeAnnotation(SNode node) throws
           JSONException {
-    List<SRelation<SNode, SNode>> out = node.getGraph().getOutRelations(node.getId());
+    List<SRelation<?, ?>> out = node.getGraph().getOutRelations(node.getId());
     String type;
     Set<SAnnotation> annos;
     JSONArray edgeData = new JSONArray();
@@ -540,7 +540,7 @@ public class RSTImpl extends Panel implements GraphTraverseHandler {
       return edgeData;
     }
 
-    for (SRelation<SNode, SNode> edge : out) {
+    for (SRelation<?, ?> edge : out) {
       if (!(edge instanceof SRelation) || edge.getTarget() instanceof SToken) {
         continue;
       }
@@ -623,10 +623,10 @@ public class RSTImpl extends Panel implements GraphTraverseHandler {
    */
   private boolean isSegment(SNode currNode) {
 
-    List<SRelation<SNode, SNode>> edges = currNode.getGraph().getOutRelations(currNode.getId());
+    List<SRelation<?, ?>> edges = currNode.getGraph().getOutRelations(currNode.getId());
 
     if (edges != null && edges.size() > 0) {
-      for (SRelation<SNode, SNode> edge : edges) {
+      for (SRelation<?, ?> edge : edges) {
         if (edge.getTarget() instanceof SToken) {
           return true;
         }

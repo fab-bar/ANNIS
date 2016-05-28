@@ -208,7 +208,7 @@ public class SaltAnnotateExtractorTest
 
 
     // dep //
-    List<SRelation<SNode, SNode>> e = new ArrayList<>(g.getLayerByName("dep").get(0).getRelations());
+    List<SRelation<?, ?>> e = new ArrayList<>(g.getLayerByName("dep").get(0).getRelations());
     Collections.sort(e, new EdgeComparator());
 
     assertEquals(9, e.size());
@@ -411,11 +411,11 @@ public class SaltAnnotateExtractorTest
     }
   }
 
-  public static class EdgeComparator implements Comparator<SRelation<SNode,SNode>>
+  public static class EdgeComparator implements Comparator<SRelation<?,?>>
   {
 
     @Override
-    public int compare(SRelation<SNode,SNode> arg0, SRelation<SNode,SNode> arg1)
+    public int compare(SRelation<?,?> arg0, SRelation<?,?> arg1)
     {
       int result = arg0.getSource().getName().compareTo(arg1.getSource().
         getName());

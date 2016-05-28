@@ -79,7 +79,7 @@ public class ResolverProviderImpl implements ResolverProvider, Serializable
     }
 
     Set<String> edgeLayers = new HashSet<String>();
-    for (SRelation<SNode, SNode> e : doc.getDocumentGraph().getRelations())
+    for (SRelation<?, ?> e : doc.getDocumentGraph().getRelations())
     {
       for (SLayer layer : e.getLayers())
       {

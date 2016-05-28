@@ -249,7 +249,7 @@ public class CorefVisualizer extends WriterVisualizer
         body.setText("An Error occured: Could not get Graph of Result (Graph == null).");
         return;
       }
-      List<SRelation<SNode,SNode>> edgeList = saltGraph.getRelations();
+      List<SRelation<?,?>> edgeList = saltGraph.getRelations();
       if (edgeList == null)
       {
         return;
@@ -796,7 +796,7 @@ public class CorefVisualizer extends WriterVisualizer
         }
       }
       //get "P"-Edges!
-      List<SRelation<SNode,SNode>> outEdges = n.getGraph().getOutRelations(n.getId());
+      List<SRelation<?,?>> outEdges = n.getGraph().getOutRelations(n.getId());
       if(outEdges != null)
       {
         for (SRelation<? extends SNode,? extends SNode> e : outEdges)
@@ -821,7 +821,7 @@ public class CorefVisualizer extends WriterVisualizer
           }
         }
       }
-      List<SRelation<SNode,SNode>> inEdges = n.getGraph().getInRelations(n.getId());
+      List<SRelation<?,?>> inEdges = n.getGraph().getInRelations(n.getId());
       if(inEdges != null)
       {
         for (SRelation<? extends SNode,? extends SNode> e : inEdges)
@@ -873,7 +873,7 @@ public class CorefVisualizer extends WriterVisualizer
     }
     else
     {
-      List<SRelation<SNode,SNode>> outEdges = n.getGraph().getOutRelations(n.getId());
+      List<SRelation<?,?>> outEdges = n.getGraph().getOutRelations(n.getId());
       if(outEdges != null)
       {
         for (SRelation<? extends SNode,? extends SNode> edge : outEdges)
@@ -919,7 +919,7 @@ public class CorefVisualizer extends WriterVisualizer
     }
     else
     {
-      List<SRelation<SNode, SNode>> outgoing = n.getGraph().getOutRelations(n.getId());
+      List<SRelation<?, ?>> outgoing = n.getGraph().getOutRelations(n.getId());
       if(outgoing != null)
       {
         for (SRelation<? extends SNode,? extends SNode> e : outgoing)

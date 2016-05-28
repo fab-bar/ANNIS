@@ -62,7 +62,7 @@ public class TimeHelper
     }
     else
     {
-      List<SRelation<SNode,SNode>> outRelations = graph.getOutRelations(node.getId());
+      List<SRelation<?,?>> outRelations = graph.getOutRelations(node.getId());
       if (outRelations != null)
       {
         for (SRelation<? extends SNode, ? extends SNode> e : outRelations)
