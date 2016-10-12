@@ -242,6 +242,9 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
                                       
     	  }
     	  
+    	  System.out.println(dominanceLists);
+          System.out.println(dominanceListsWithHead);
+    	  
      	  
     	 //iterate again 
         ListIterator<SToken> it = orderedToken.listIterator();
@@ -252,6 +255,7 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
         //eliminate entries whose key (matching code) dominate other matching codes  
         while(inDomIt.hasNext()){
         	Long matchingCode = inDomIt.next();
+        	System.out.println("InDomMatchingCode: "  + matchingCode);
         	if (dominanceListsWithHead.containsKey(matchingCode)){
         		dominanceListsWithHead.remove(matchingCode);
         	}
@@ -310,14 +314,14 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 			}
        }
        
-        /*for (int i = 0; i < adjacencyMatrix.length; i++){
+        for (int i = 0; i < adjacencyMatrix.length; i++){
         	for (int j = 0; j < adjacencyMatrix[0].length; j++){
         		System.out.print(adjacencyMatrix[i][j] + "\t");
         	}
         	System.out.print("\n");
         }        
         System.out.println("maxDist: " +maxDistances);
-        */
+        
         
         
         
@@ -445,7 +449,8 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 				                      }
 		                    	}
 		                    	else{
-		                    		separator = "\t";
+		                    		// if the both matches are independent
+		                    		separator = "\t\t";
 		                    	}
 		                    	
 		                    }
