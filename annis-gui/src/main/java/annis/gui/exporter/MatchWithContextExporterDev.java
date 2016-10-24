@@ -519,9 +519,129 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 		                      // always leave an empty column between two matches, even if there is no actual context
 		                      
 		                    	separator= "";
+		                    	int tabCount = adjacencyMatrix[(int) (lastTokenWasMatched - 1)][(int) ((long) traverser.matchedNode - 1)];
+		                    	     	
+		                    	
+		                    	//filter not used, thus all matches and all columns are relevant
+		                    	if (filterNumbers.isEmpty()){
+		                    		
+			                    	if (tabCount != -1){
+			                    		for (int i = 0; i < tabCount; i++){
+					                    	  separator += "\t";
+					                      }
+			                    	}
+			                    	else{
+			                    		// if the both matches are independent
+			                    		if (maxDistances.containsKey(lastTokenWasMatched -1)){
+					                    	  tabCount = maxDistances.get(lastTokenWasMatched -1) + 1;	
+					                    	             	
+						                    	  for (int i = 0; i < tabCount; i++){
+							                    	  separator += "\t";
+							                    	  
+							                      }  
+						                    	  						                    	 
+					                      }
+			                    		else{
+			                    			separator = "\t\t";
+			                    		}
+			                    		
+			                    	}
+		                    	}
+		                    	
+		                    	else{
+		                    		//calculate the amount of missed matching columns
+	                				int missedColumns = 0;
+	                				if (lastTokenWasMatched < traverser.matchedNode){
+	                					for(long i = lastTokenWasMatched + 1 ; i < traverser.matchedNode; i++){
+	                						if (!filterNumbers.contains(i)){
+	                							missedColumns++;
+	                						}
+	                					}
+	                				}
+	                				else{
+	                					for(long i = traverser.matchedNode  + 1 ; i < lastTokenWasMatched; i++){
+	                						if (!filterNumbers.contains(i)){
+	                							missedColumns++;
+	                						}
+	                					}
+	                				}
+	                				
+	                				// calculate the amount of missed matches
+	                				Integer missedMatches = 0;
+	                				int maxTabCount = 1;
+	                				if (maxDistances.containsKey(lastTokenWasMatched -1)){
+				                    	  maxTabCount += maxDistances.get(lastTokenWasMatched -1);	
+				                    	  //calculate the amount of missed matches				                    	  
+				                    	  if(!filterNumbers.isEmpty() && dominanceListsWithHeadRedundant.containsKey(lastTokenWasMatched)){		                    		 
+				                    		  List<Long>  dominances = dominanceListsWithHeadRedundant.get(lastTokenWasMatched);
+				                    		  for(Long number : dominances){
+				                    			  if (!filterNumbers.contains(number)){
+				                    				  missedMatches++;
+				                    			  }
+				                    		  }   		                    		  
+				                    	  }                    	 
+				                      }
+	                				                				
+	                				
+		                    		
+	                				//last token was filtered
+		                    		if (filterNumbers.contains(lastTokenWasMatched)){               		
+                    				
+			                    		//current token was filtered
+			                    		if (filterNumbers.contains(traverser.matchedNode)){			                    			
+					                    	//matches are coherent  
+			                    			if (tabCount != -1){
+						                    		for (int i = 0; i < (tabCount  - missedColumns); i++){
+								                    	  separator += "\t";
+								                      }
+						                    	}
+			                    			// the both matches are independent
+						                    	else{ 		
+						                    		
+						                    		 for (int i = 0; i < (maxTabCount - missedMatches); i++){
+								                    	  separator += "\t";
+								                    	  
+								                      }  
+						                    		//separator = "\t\t";
+						                    	}                    			
+			                    		}
+			                    		//current token was not filtered
+			                    		else{
+			                    			
+			                    		}
+			                    				                    		
+		                    		}
+		                    		// last token was not filtered
+			                    	else{
+			                    		//current token was filtered
+			                    		if (filterNumbers.contains(traverser.matchedNode)){
+			                    			// matches are coherent
+			                    			if (tabCount != -1){ 	                    				
+					                    		for (int i = 0; i < (tabCount  - missedColumns); i++){
+							                    	  separator += "\t";
+							                      }
+					                    	}
+			                    			else{
+			                    				//TODO check
+			                    				separator += "\t";
+			                    			}
+			                    			
+			                    			
+			                    		}
+			                    		//current token was not filtered
+			                    		else{
+			                    			separator += " ";
+			                    			 
+			                    		}
+			                    		
+			                    	}
+		                    	}
+		                    	
+		     	
+		                    	
 		                    	
 		                    	// last token was filtered
-		                    	if (filterNumbers.contains(lastTokenWasMatched) || filterNumbers.isEmpty()){
+		                    	/*if (filterNumbers.contains(lastTokenWasMatched) || filterNumbers.isEmpty()){
 		                    		if (filterNumbers.contains(traverser.matchedNode) || filterNumbers.isEmpty()){
 		                    			int tabCount = adjacencyMatrix[(int) (lastTokenWasMatched - 1)][(int) ((long) traverser.matchedNode - 1)];
 				                    	if (tabCount != -1){
@@ -551,7 +671,8 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 		                    			separator += " ";
 		                    			 
 		                    		}
-		                    	}
+		                    	}*/
+		                    	
 		                    	
 		                    	
 		                    	
