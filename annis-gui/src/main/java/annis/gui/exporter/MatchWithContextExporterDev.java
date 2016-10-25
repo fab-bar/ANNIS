@@ -196,7 +196,6 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
       List<SToken> orderedToken = graph.getSortedTokenByText();
          
       //extract filter numbers
-      //if (isFirstSpeakerWithMatch && args.containsKey(FILTER_PARAMETER_KEYWORD)){
       if (args.containsKey(FILTER_PARAMETER_KEYWORD)){
     	     	 
     	  String parameters = args.get(FILTER_PARAMETER_KEYWORD);
@@ -239,7 +238,7 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
     
     	// iterate first time over tokens to figure out which speaker has matches and to recognize the hierarchical structure of matches as well
     	  for(SToken token : orderedToken){
-    		  System.out.println("Token:\t" + graph.getText(token));
+    		//  System.out.println("Token:\t" + graph.getText(token));
               maxHeight = 0;
               currHeight = 0;
     		  
@@ -274,10 +273,7 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
               }
                                       
     	  }
-    	  
-    	  System.out.println(dominanceLists);
-          System.out.println(dominanceListsWithHead);
-    	  
+    	      	  
      	  
     	// prepare adjacency matrix
         // TODO this code can be a separated method 
@@ -288,7 +284,6 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
         //eliminate entries whose key (matching code) dominate other matching codes  
         while(inDomIt.hasNext()){
         	Long matchingCode = inDomIt.next();
-        	System.out.println("InDomMatchingCode: "  + matchingCode);
         	if (dominanceListsWithHead.containsKey(matchingCode)){
         		dominanceListsWithHead.remove(matchingCode);
         	}
@@ -406,10 +401,8 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 		        		 
 		        		 String prefix = "M_";
 		        		 
-		        		 System.out.println("dominanceListsWithoutDoubles: " +  dominanceListsWithoutDoubles);
-		        		 
+		        	    		 
 		        		 domListsSorted =  sortByKey(dominanceListsWithoutDoubles);
-		        		 int listCount = domListsSorted.size();
 		        		 int count = 0;
 		        		 int currMatchingGroup = 0;
 		        		 int lastMatchingGroup = 0;
@@ -473,53 +466,59 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 	        	 //write token
 	        	 
 	        	  String separator = " "; // default to space as separator
-	        	       	  
+	        	  	        	       	  
 	        	  		  List<SNode> root = new LinkedList<>();
 		                  root.add(tok);
 		                  IsDominatedByMatch traverser = new IsDominatedByMatch();
 		                  graph.traverse(root, GRAPH_TRAVERSE_TYPE.BOTTOM_UP_DEPTH_FIRST, "IsDominatedByMatch", traverser);
 		                  if(traverser.matchedNode != null)
 		                  {
+		                	  
 		                    // is dominated by a (new) matched node, thus use tab to separate the non-matches from the matches
 		                    if(lastTokenWasMatched < 0)
 		                    {
-		                      //separator = "\t"; 
 		                      separator= "";
-		                      if(!filterNumbers.contains(traverser.matchedNode) && !filterNumbers.isEmpty()){
-		                    	  separator = " ";
-		                   
-		                      }
-		                      else if (maxDistances.containsKey(traverser.matchedNode -1)){
-		                    	  Integer tabCount = maxDistances.get(traverser.matchedNode -1) + 1;	
-		                    	  //calculate the amount of missed matches
-		                    	  Integer missedMatches = 0;
-		                    	  if(!filterNumbers.isEmpty() && dominanceListsWithHeadRedundant.containsKey(traverser.matchedNode)){		                    		 
-		                    		  List<Long>  dominances = dominanceListsWithHeadRedundant.get(traverser.matchedNode);
-		                    		  for(Long number : dominances){
-		                    			  if (!filterNumbers.contains(number)){
-		                    				  missedMatches++;
-		                    			  }
-		                    		  }   		                    		  
-		                    	  }
-			                    	  for (int i = 0; i < (tabCount - missedMatches); i++){
-				                    	  separator += "\t";
-				                    	  
-				                      }  
-			                    	 
-		                      }
-		                      else{
-		                    	  separator = "\t";  
-		                    	 
-		                      }
-		                      
+		                     	                      
+		                   //either filter parameter list is empty or it contains the current matching code
+	                        if (filterNumbers.isEmpty() || filterNumbers.contains(traverser.matchedNode)) {
+	                    	  int maxTabCount = 1;
+	                    	  int missedMatches = 0;
+	                    	  
+	                    	  if (maxDistances.containsKey(traverser.matchedNode - 1)){
+	                    	  maxTabCount += maxDistances.get(traverser.matchedNode - 1);	
+	                    	  
+	                    	  //calculate the number of missed matches		                    	 
+	                    	  if(!filterNumbers.isEmpty() && dominanceListsWithHeadRedundant.containsKey(traverser.matchedNode)){		                    		 
+	                    		  List<Long>  dominances = dominanceListsWithHeadRedundant.get(traverser.matchedNode);
+	                    		  for(Long number : dominances){
+	                    			  if (!filterNumbers.contains(number)){
+	                    				  missedMatches++;
+	                    			  }
+	                    		  }   		                    		  
+	                    	  }
+	                    	}
+	                    	  
+	                    	  for (int i = 0; i < (maxTabCount - missedMatches); i++){
+		                    	  separator += "\t";			                    	  
+		                      }  
+		                     
+	                      }  
+	                      //filter parameter list is not empty, but it does not contain the current matching code
+	                      else{
+	                    	  separator += " ";
+	                      }
 		                			                      
 		                    }
 		                    else if(lastTokenWasMatched != (long) traverser.matchedNode)
 		                    {
-		                      // always leave an empty column between two matches, even if there is no actual context
-		                      
+		                   		                      
 		                    	separator= "";
 		                    	int tabCount = adjacencyMatrix[(int) (lastTokenWasMatched - 1)][(int) ((long) traverser.matchedNode - 1)];
+		                    	
+		                    	int maxTabCount = 2;
+		                    	if (maxDistances.containsKey(lastTokenWasMatched -1)){
+			                    	  maxTabCount += maxDistances.get(lastTokenWasMatched -1);	
+		                    	}
 		                    	     	
 		                    	
 		                    	//filter not used, thus all matches and all columns are relevant
@@ -531,25 +530,16 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 					                      }
 			                    	}
 			                    	else{
-			                    		// if the both matches are independent
-			                    		if (maxDistances.containsKey(lastTokenWasMatched -1)){
-					                    	  tabCount = maxDistances.get(lastTokenWasMatched -1) + 1;	
-					                    	             	
-						                    	  for (int i = 0; i < tabCount; i++){
-							                    	  separator += "\t";
-							                    	  
-							                      }  
-						                    	  						                    	 
-					                      }
-			                    		else{
-			                    			separator = "\t\t";
-			                    		}
-			                    		
+			                    		// matches are independent			                    		                   	        	             	
+				                    	  for (int i = 0; i < maxTabCount; i++){
+					                    	  separator += "\t";							                    	  
+					                      }  						                    	  						                    	 
+					                                        		
 			                    	}
 		                    	}
 		                    	
 		                    	else{
-		                    		//calculate the amount of missed matching columns
+		                    		//calculate the number of missed matching columns
 	                				int missedColumns = 0;
 	                				if (lastTokenWasMatched < traverser.matchedNode){
 	                					for(long i = lastTokenWasMatched + 1 ; i < traverser.matchedNode; i++){
@@ -566,50 +556,48 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 	                					}
 	                				}
 	                				
-	                				// calculate the amount of missed matches
-	                				Integer missedMatches = 0;
-	                				int maxTabCount = 1;
-	                				if (maxDistances.containsKey(lastTokenWasMatched -1)){
-				                    	  maxTabCount += maxDistances.get(lastTokenWasMatched -1);	
-				                    	  //calculate the amount of missed matches				                    	  
-				                    	  if(!filterNumbers.isEmpty() && dominanceListsWithHeadRedundant.containsKey(lastTokenWasMatched)){		                    		 
-				                    		  List<Long>  dominances = dominanceListsWithHeadRedundant.get(lastTokenWasMatched);
-				                    		  for(Long number : dominances){
-				                    			  if (!filterNumbers.contains(number)){
-				                    				  missedMatches++;
-				                    			  }
-				                    		  }   		                    		  
-				                    	  }                    	 
-				                      }
-	                				                				
+	                				
+	                				 int missedMatches = 0;                			
+			                    	  //calculate the number of missed matches				                    	  
+			                    	  if(!filterNumbers.isEmpty() && dominanceListsWithHeadRedundant.containsKey(lastTokenWasMatched)){		                    		 
+			                    		  List<Long>  dominances = dominanceListsWithHeadRedundant.get(lastTokenWasMatched);
+			                    		  for(Long number : dominances){
+			                    			  if (!filterNumbers.contains(number)){
+			                    				  missedMatches++;
+			                    			  }
+			                    		  }   		                    		  
+			                    	  }                    	 
+				                      				                				
 	                				
 		                    		
 	                				//last token was filtered
-		                    		if (filterNumbers.contains(lastTokenWasMatched)){               		
-                    				
-			                    		//current token was filtered
-			                    		if (filterNumbers.contains(traverser.matchedNode)){			                    			
-					                    	//matches are coherent  
-			                    			if (tabCount != -1){
-						                    		for (int i = 0; i < (tabCount  - missedColumns); i++){
-								                    	  separator += "\t";
-								                      }
-						                    	}
-			                    			// the both matches are independent
-						                    	else{ 		
-						                    		
-						                    		 for (int i = 0; i < (maxTabCount - missedMatches); i++){
-								                    	  separator += "\t";
-								                    	  
+		                    		if (filterNumbers.contains(lastTokenWasMatched)){      				
+			                    		                    			
+				                    	//matches are coherent  
+		                    			if (tabCount != -1){
+					                    		for (int i = 0; i < (tabCount  - missedColumns); i++){
+							                    	  separator += "\t";
+							                      }
+					                    	}
+		                    			// matches are independent
+					                    	else{ 	
+					                    		// current token is filtered
+					                    		 if (filterNumbers.contains(traverser.matchedNode)){
+					                    			 for (int i = 0; i < (maxTabCount - missedMatches); i++){
+								                    	  separator += "\t";							                    	  
 								                      }  
-						                    		//separator = "\t\t";
-						                    	}                    			
-			                    		}
-			                    		//current token was not filtered
-			                    		else{
-			                    			
-			                    		}
-			                    				                    		
+					                    		 }
+					                    		// current token is not filtered
+					                    		 else{
+					                    			 for (int i = 0; i < (maxTabCount - missedMatches - 1); i++){
+								                    	  separator += "\t";							                    	  
+								                      }  
+					                    		 }
+					                    		
+					                    		
+					                    		
+					                    	}   	                    		
+			                    					                    				                    		
 		                    		}
 		                    		// last token was not filtered
 			                    	else{
@@ -621,8 +609,9 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 							                    	  separator += "\t";
 							                      }
 					                    	}
+			                    			// matches are independent
 			                    			else{
-			                    				//TODO check
+			                   
 			                    				separator += "\t";
 			                    			}
 			                    			
@@ -635,61 +624,24 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 			                    		}
 			                    		
 			                    	}
-		                    	}
-		                    	
-		     	
-		                    	
-		                    	
-		                    	// last token was filtered
-		                    	/*if (filterNumbers.contains(lastTokenWasMatched) || filterNumbers.isEmpty()){
-		                    		if (filterNumbers.contains(traverser.matchedNode) || filterNumbers.isEmpty()){
-		                    			int tabCount = adjacencyMatrix[(int) (lastTokenWasMatched - 1)][(int) ((long) traverser.matchedNode - 1)];
-				                    	if (tabCount != -1){
-				                    		for (int i = 0; i < tabCount; i++){
-						                    	  separator += "\t";
-						                      }
-				                    	}
-				                    	else{
-				                    		// if the both matches are independent
-				                    		separator = "\t\t";
-				                    	}
-				                    	
-				                    	
-		                    		}
-		                    		else{
-		                    			separator += "\t";
-		                    			 
-		                    		}
-		                    	}
-		                    	//last token was not filtered
-		                    	else{
-		                    		if (filterNumbers.contains(traverser.matchedNode) || filterNumbers.isEmpty()){
-		                    			separator += "\t";
-		                    			
-		                    		}
-		                    		else{
-		                    			separator += " ";
-		                    			 
-		                    		}
-		                    	}*/
-		                    	
-		                    	
-		                    	
+		                    	}	                    	
 		                    	
 		                    }
 		                    lastTokenWasMatched = traverser.matchedNode;
 		                  }
+		                  // last token was matched, current token is not matched
 		                  else if(lastTokenWasMatched >= 0)
-		                  {
-		                    // also mark the end of a match with the tab
-		                    //separator = "\t";
-		                	  
+		                  {		                                   	  
 		                	  separator= "";
+		                	  int maxTabCount = 1;
+		                	  int missedMatches = 0;
 		                	  
+		                	// also mark the end of a filtered match
 		                	  if (filterNumbers.contains(lastTokenWasMatched) || filterNumbers.isEmpty()){
 		                		  if (maxDistances.containsKey(lastTokenWasMatched - 1)){
-		                			  //calculate the amount of missed matches
-			                    	  Integer missedMatches = 0;
+		                			  maxTabCount += maxDistances.get(lastTokenWasMatched - 1);		
+		                			  
+		                			  //calculate the number of missed matches			                    	  
 			                    	  if(!filterNumbers.isEmpty() && dominanceListsWithHeadRedundant.containsKey(lastTokenWasMatched)){		                    		 
 			                    		  List<Long>  dominances = dominanceListsWithHeadRedundant.get(lastTokenWasMatched);
 			                    		  for(Long number : dominances){
@@ -697,26 +649,19 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
 			                    				  missedMatches++;
 			                    			  }
 			                    		  }   		                    		  
-			                    	  }
-		                			  
-			                		  Integer tabCount = maxDistances.get(lastTokenWasMatched - 1) + 1;			                     
-				                    	  for (int i = 0; i < (tabCount - missedMatches); i++){
-					                    	  separator += "\t";
-					                      }			                      
+			                    	  }               		  	                     
+				                    	  		                      
 			                	  }
 			                      
-			                      else{
-			                    	  separator = "\t";
-			                      }
+		                		  for (int i = 0; i < (maxTabCount - missedMatches); i++){
+			                    	  separator += "\t";
+			                      }	
 		                	  }
+		                	  //otherwise concatenate the last token (which is not filtered) with the current token, since it is not matched
 		                	  else{
-		                		  separator = " ";
+		                		  separator += " ";
 		                	  }
-		                	  
-		                	
-			                      
-		                	  
-		                	  
+		                	  	                	  
 		                    lastTokenWasMatched = -1;
 		                  }
 		                  
@@ -754,8 +699,13 @@ public class MatchWithContextExporterDev extends SaltBasedExporter
   @Override
   public String getHelpMessage()
   {
-    return null;
+    return "The MatchWithContext-Exporter exports matches surrounded by the context."
+        + "The matches as well the context will be aligned. <br/><br/>"
+        + "Parameters: <br/>"
+        + "<em>filter</em> - comma separated list of all matching numbers to be represented in the result as separated column (e.g. "
+        + "<code>filter=1,2</code>)";
   }
+  
   
   @Override
   public String getFileEnding()
